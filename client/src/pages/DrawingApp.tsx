@@ -29,6 +29,7 @@ const DrawingApp = () => {
         const drawingData = {
           name: 'Untitled Drawing',
           data,
+          userId: null, // Since we don't have user authentication yet
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
