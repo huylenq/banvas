@@ -50,30 +50,31 @@ const DrawingApp = () => {
     setActiveTool(tool);
     setStatus(`Tool: ${tool}`);
     
+    // TLDraw v3.9.0 uses the tool property directly
     switch (tool) {
       case 'select':
-        editor.selectTool('select');
+        editor.tool = 'select';
         break;
       case 'pen':
-        editor.selectTool('draw');
+        editor.tool = 'draw';
         break;
       case 'rectangle':
-        editor.selectTool('geo');
+        editor.tool = 'geo';
         editor.updateInstanceState({
           propsForNextShape: { geo: 'rectangle' },
         });
         break;
       case 'ellipse':
-        editor.selectTool('geo');
+        editor.tool = 'geo';
         editor.updateInstanceState({
           propsForNextShape: { geo: 'ellipse' },
         });
         break;
       case 'text':
-        editor.selectTool('text');
+        editor.tool = 'text';
         break;
       case 'line':
-        editor.selectTool('line');
+        editor.tool = 'line';
         break;
     }
   };
