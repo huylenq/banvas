@@ -70,7 +70,7 @@ const DrawingApp = () => {
       const selectedIds = editor.getSelectedShapeIds();
       const shapes = selectedIds.length > 0 ? selectedIds : [];
       
-      const svg = await editor.getSvg(shapes);
+      const svg = await editor.getSvg(selectedIds);
       
       if (svg) {
         const svgString = new XMLSerializer().serializeToString(svg);
