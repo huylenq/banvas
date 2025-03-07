@@ -1,4 +1,6 @@
-import { users, type User, type InsertUser, type Drawing, type InsertDrawing } from "@shared/schema";
+import { db } from './db';
+import { eq } from 'drizzle-orm';
+import { users, drawings, type User, type InsertUser, type Drawing, type InsertDrawing } from "@shared/schema";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -8,68 +10,56 @@ export interface IStorage {
   getDrawing(id: number): Promise<Drawing | undefined>;
   getDrawingsByUserId(userId: number): Promise<Drawing[]>;
   updateDrawing(id: number, data: string): Promise<Drawing | undefined>;
+  getAllDrawings(): Promise<Drawing[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private drawings: Map<number, Drawing>;
-  private userIdCounter: number;
-  private drawingIdCounter: number;
-
-  constructor() {
-    this.users = new Map();
-    this.drawings = new Map();
-    this.userIdCounter = 1;
-    this.drawingIdCounter = 1;
-  }
-
+export class DbStorage implements IStorage {
+  
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const result = await db.select().from(users).where(eq(users.username, username));
+    return result[0];
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const result = await db.insert(users).values(insertUser).returning();
+    return result[0];
   }
 
   async saveDrawing(insertDrawing: InsertDrawing): Promise<Drawing> {
-    const id = this.drawingIdCounter++;
-    const drawing: Drawing = { ...insertDrawing, id };
-    this.drawings.set(id, drawing);
-    return drawing;
+    const result = await db.insert(drawings).values(insertDrawing).returning();
+    return result[0];
   }
 
   async getDrawing(id: number): Promise<Drawing | undefined> {
-    return this.drawings.get(id);
+    const result = await db.select().from(drawings).where(eq(drawings.id, id));
+    return result[0];
   }
 
   async getDrawingsByUserId(userId: number): Promise<Drawing[]> {
-    return Array.from(this.drawings.values()).filter(
-      (drawing) => drawing.userId === userId
-    );
+    return await db.select().from(drawings).where(eq(drawings.userId, userId));
+  }
+
+  async getAllDrawings(): Promise<Drawing[]> {
+    return await db.select().from(drawings);
   }
 
   async updateDrawing(id: number, data: string): Promise<Drawing | undefined> {
-    const drawing = this.drawings.get(id);
-    if (!drawing) return undefined;
+    const result = await db
+      .update(drawings)
+      .set({ 
+        data, 
+        updatedAt: new Date().toISOString() 
+      })
+      .where(eq(drawings.id, id))
+      .returning();
     
-    const updatedDrawing: Drawing = {
-      ...drawing,
-      data,
-      updatedAt: new Date().toISOString()
-    };
-    
-    this.drawings.set(id, updatedDrawing);
-    return updatedDrawing;
+    return result[0];
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DbStorage();

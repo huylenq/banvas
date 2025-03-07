@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertDrawingSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
+import { ZodError } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes for drawing operations
@@ -12,8 +13,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const drawing = await storage.saveDrawing(validatedData);
       return res.status(201).json(drawing);
     } catch (error) {
-      if (error instanceof Error) {
-        return res.status(400).json({ message: fromZodError(error).message });
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
       }
       return res.status(500).json({ message: "Failed to save drawing" });
     }
@@ -45,6 +47,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const drawings = await storage.getDrawingsByUserId(userId);
+      return res.json(drawings);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to retrieve drawings" });
+    }
+  });
+  
+  // Get all drawings
+  app.get("/api/drawings", async (req, res) => {
+    try {
+      const drawings = await storage.getAllDrawings();
       return res.json(drawings);
     } catch (error) {
       return res.status(500).json({ message: "Failed to retrieve drawings" });
