@@ -26,9 +26,12 @@ const DrawingApp = () => {
   const handleExport = async () => {
     if (!editor) return;
     
-    // Export as SVG
     try {
-      const svg = await editor.exportSvg();
+      setStatus('Exporting...');
+      
+      // TLDraw v3.9.0+ API for exporting SVG
+      const svg = await editor.getSvg(undefined);
+      
       if (svg) {
         const svgString = new XMLSerializer().serializeToString(svg);
         const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
@@ -41,6 +44,8 @@ const DrawingApp = () => {
         
         URL.revokeObjectURL(url);
         setStatus('Exported as SVG');
+      } else {
+        setStatus('Nothing to export');
       }
     } catch (error) {
       console.error('Error exporting SVG:', error);
@@ -81,19 +86,19 @@ const DrawingApp = () => {
                   className="p-1 text-neutral-600 hover:text-primary"
                   onClick={handleZoomOut}
                 >
-                  <i className="fas fa-search-minus"></i>
+                  -
                 </button>
                 <button 
                   className="p-1 text-neutral-600 hover:text-primary"
                   onClick={handleResetZoom}
                 >
-                  <i className="fas fa-compress-arrows-alt"></i>
+                  Reset
                 </button>
                 <button 
                   className="p-1 text-neutral-600 hover:text-primary"
                   onClick={handleZoomIn}
                 >
-                  <i className="fas fa-search-plus"></i>
+                  +
                 </button>
               </div>
             </div>
