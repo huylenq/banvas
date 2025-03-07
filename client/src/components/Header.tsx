@@ -1,3 +1,5 @@
+import { Download } from 'lucide-react';
+
 interface HeaderProps {
   onExport: () => void;
 }
@@ -13,7 +15,7 @@ const Header = ({ onExport }: HeaderProps) => {
           className="bg-primary text-white px-3 py-1.5 rounded-md text-sm flex items-center hover:bg-blue-600 transition"
           onClick={onExport}
         >
-          <i className="fas fa-download mr-1.5"></i> Export
+          <Download className="h-4 w-4 mr-1.5" /> Export
         </button>
       </div>
     </header>
