@@ -52,28 +52,28 @@ const DrawingApp = () => {
     
     switch (tool) {
       case 'select':
-        editor.setTool('select');
+        editor.selectTool('select');
         break;
       case 'pen':
-        editor.setTool('draw');
+        editor.selectTool('draw');
         break;
       case 'rectangle':
-        editor.setTool('geo');
+        editor.selectTool('geo');
         editor.updateInstanceState({
           propsForNextShape: { geo: 'rectangle' },
         });
         break;
       case 'ellipse':
-        editor.setTool('geo');
+        editor.selectTool('geo');
         editor.updateInstanceState({
           propsForNextShape: { geo: 'ellipse' },
         });
         break;
       case 'text':
-        editor.setTool('text');
+        editor.selectTool('text');
         break;
       case 'line':
-        editor.setTool('line');
+        editor.selectTool('line');
         break;
     }
   };
