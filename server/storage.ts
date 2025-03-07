@@ -1,5 +1,5 @@
 import { db } from './db';
-import { eq } from 'drizzle-orm';
+import { eq, desc, sql } from 'drizzle-orm';
 import { users, drawings, type User, type InsertUser, type Drawing, type InsertDrawing } from "@shared/schema";
 
 export interface IStorage {
@@ -45,7 +45,9 @@ export class DbStorage implements IStorage {
   }
 
   async getAllDrawings(): Promise<Drawing[]> {
-    return await db.select().from(drawings);
+    return await db.select()
+      .from(drawings)
+      .orderBy(desc(drawings.updatedAt)); // Sort by updatedAt in descending order
   }
 
   async updateDrawing(id: number, data: string): Promise<Drawing | undefined> {

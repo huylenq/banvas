@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { 
   Editor, 
   Tldraw,
@@ -8,7 +8,7 @@ import { Save, Download } from 'lucide-react';
 import '@tldraw/tldraw/tldraw.css';
 import { serializeEditor, createNewDrawing, loadDrawingIntoEditor } from '@/lib/drawingUtils';
 import { apiRequest, queryClient } from '@/lib/queryClient';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Drawing } from '@shared/schema';
 import SavedDrawingsList from '@/components/SavedDrawingsList';
 
@@ -20,7 +20,7 @@ const DrawingApp = () => {
   const [drawingName, setDrawingName] = useState('Untitled Drawing');
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  
   // Save drawing mutation
   const saveDrawingMutation = useMutation({
     mutationFn: async ({ id, data, isNew }: { id: number | null, data: string, isNew: boolean }) => {
@@ -73,7 +73,6 @@ const DrawingApp = () => {
       
       // TLDraw v3.9.0+ API for exporting SVG
       const selectedIds = editor.getSelectedShapeIds();
-      const shapes = selectedIds.length > 0 ? selectedIds : [];
       
       const svg = await editor.getSvg(selectedIds);
       
@@ -137,7 +136,7 @@ const DrawingApp = () => {
     if (!editor) return;
     editor.resetZoom();
   };
-
+  
   const handleLoadDrawing = useCallback(async (drawing: Drawing) => {
     if (!editor) return;
     
@@ -159,6 +158,21 @@ const DrawingApp = () => {
       setIsLoading(false);
     }
   }, [editor]);
+  
+  // Query to fetch all drawings
+  const { data: drawings } = useQuery<Drawing[]>({
+    queryKey: ['/api/drawings'],
+    staleTime: 1000 * 60, // 1 minute
+  });
+  
+  // Load the most recent drawing when the editor is mounted and drawings are available
+  useEffect(() => {
+    if (editor && drawings && drawings.length > 0 && !drawingId) {
+      // The drawings are already sorted by updatedAt in descending order from the server
+      // Load the most recent drawing (first in the array)
+      handleLoadDrawing(drawings[0]);
+    }
+  }, [editor, drawings, drawingId, handleLoadDrawing]);
 
   return (
     <div className="flex flex-col h-screen">
