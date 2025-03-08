@@ -1,5 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
-import { Editor, Tldraw, TLShapeId } from "@tldraw/tldraw";
+import { 
+  Editor, 
+  Tldraw, 
+  TLShapeId,
+  defaultEditorAssetUrls
+} from "@tldraw/tldraw";
 import { Save, Download } from "lucide-react";
 import "@tldraw/tldraw/tldraw.css";
 import {
@@ -307,7 +312,14 @@ const DrawingApp = () => {
             id="tldraw-container"
             className="flex-1 bg-neutral-100 relative overflow-hidden"
           >
-            <Tldraw onMount={handleEditorMount} autoFocus />
+            <Tldraw 
+              onMount={handleEditorMount} 
+              autoFocus
+              persistenceKey="tldraw-app"
+              hideUi={false}
+              disableAssetUrlReplacement={true}
+              useStateForStorage={true}
+            />
           </div>
         </div>
       </div>
