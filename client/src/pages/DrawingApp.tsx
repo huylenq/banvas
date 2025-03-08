@@ -315,10 +315,8 @@ const DrawingApp = () => {
             <Tldraw 
               onMount={handleEditorMount} 
               autoFocus
-              persistenceKey="tldraw-app"
-              hideUi={false}
-              disableAssetUrlReplacement={true}
-              useStateForStorage={true}
+              persistenceKey="drawing-app-state"
+              components={{}}
             />
           </div>
         </div>
