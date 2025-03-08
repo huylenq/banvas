@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Drawing } from '@shared/schema';
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Drawing } from "@shared/schema";
 import {
   Dialog,
   DialogContent,
@@ -9,19 +9,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FolderOpen } from 'lucide-react';
-import { formatDistance } from 'date-fns';
+import { FolderOpen } from "lucide-react";
+import { formatDistance } from "date-fns";
 
 interface SavedDrawingsListProps {
   onDrawingSelect: (drawing: Drawing) => void;
   isLoading?: boolean;
 }
 
-const SavedDrawingsList = ({ onDrawingSelect, isLoading = false }: SavedDrawingsListProps) => {
+const SavedDrawingsList = ({
+  onDrawingSelect,
+  isLoading = false,
+}: SavedDrawingsListProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   const { data: drawings, isLoading: isLoadingDrawings } = useQuery<Drawing[]>({
-    queryKey: ['/api/drawings'],
+    queryKey: ["/api/drawings"],
     staleTime: 1000 * 60, // 1 minute
   });
 
@@ -43,19 +46,17 @@ const SavedDrawingsList = ({ onDrawingSelect, isLoading = false }: SavedDrawings
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <button
-          className="bg-blue-500 text-white px-3 py-1.5 rounded-md text-sm flex items-center hover:bg-blue-600 transition"
+          className="text-dark px-3 py-1.5 rounded-md text-sm flex items-center hover:bg-secondary transition"
           disabled={isLoading}
         >
           <FolderOpen className="h-4 w-4 mr-1.5" />
-          {isLoading ? 'Loading...' : 'Open'}
+          {isLoading ? "Loading..." : "Open"}
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Saved Drawings</DialogTitle>
-          <DialogDescription>
-            Select a drawing to open
-          </DialogDescription>
+          <DialogDescription>Select a drawing to open</DialogDescription>
         </DialogHeader>
         <div className="max-h-[400px] overflow-y-auto">
           {isLoadingDrawings ? (
@@ -63,7 +64,9 @@ const SavedDrawingsList = ({ onDrawingSelect, isLoading = false }: SavedDrawings
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
           ) : !drawings || drawings.length === 0 ? (
-            <p className="text-center py-8 text-neutral-500">No saved drawings found</p>
+            <p className="text-center py-8 text-neutral-500">
+              No saved drawings found
+            </p>
           ) : (
             <ul className="space-y-2">
               {drawings.map((drawing) => (
@@ -74,7 +77,9 @@ const SavedDrawingsList = ({ onDrawingSelect, isLoading = false }: SavedDrawings
                 >
                   <div className="flex justify-between items-center">
                     <h3 className="font-medium">{drawing.name}</h3>
-                    <span className="text-xs text-neutral-500">ID: {drawing.id}</span>
+                    <span className="text-xs text-neutral-500">
+                      ID: {drawing.id}
+                    </span>
                   </div>
                   <div className="mt-1 text-sm text-neutral-500">
                     <span>Updated {formatDate(drawing.updatedAt)}</span>
